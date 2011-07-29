@@ -1,7 +1,7 @@
 import unittest
 import mock
-from blitzio.sprint import Sprint
-from blitzio.api import Error, ValidationError
+from blitz.sprint import Sprint
+from blitz.api import Error, ValidationError
 
 class  SprintTestCase(unittest.TestCase):
     

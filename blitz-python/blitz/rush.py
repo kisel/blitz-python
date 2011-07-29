@@ -1,8 +1,8 @@
 __author__="ghermeto"
 __date__ ="$27/07/2011 23:23:30$"
 
-from blitzio.api import Curl, ValidationError
-from blitzio.validation import validate_url, validate_list, validate
+from blitz.api import Curl, ValidationError
+from blitz.validation import validate_url, validate_list, validate
 
 class Point:
     """ Snapshot of a rush at time[i] containing information about hits, errors

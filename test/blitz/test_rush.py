@@ -1,7 +1,7 @@
 import unittest
 import mock
-from blitzio.rush import Rush
-from blitzio.api import Error, ValidationError
+from blitz.rush import Rush
+from blitz.api import Error, ValidationError
 
 class  RushTestCase(unittest.TestCase):
     
