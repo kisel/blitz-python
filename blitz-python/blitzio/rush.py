@@ -38,11 +38,11 @@ class Result:
         """ region: The region from which the rush was executed
             timeline: The timeline of the rush containing various statistics."""
         
-        self.result = result['region'] if 'region' in result else None
+        self.region = result['region'] if 'region' in result else None
         if 'timeline' in result and validate_list(result['timeline']):
             def point(p):
                 return Point(p)
-            self.timeline = map(point, result['timeline'])
+            self.timeline = list(map(point, result['timeline']))
         else:
             self.timeline = None
 
