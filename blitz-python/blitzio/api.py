@@ -12,7 +12,7 @@ class Error(Exception):
         self.error = error
         self.reason = reason
 
-class ValidationError(blitz.api.Error):
+class ValidationError(Error):
     """ Validation error for Blitz api. """
     
     def __init__(self, reason, fields = []):

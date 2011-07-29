@@ -1,6 +1,6 @@
 import unittest
 import mock
-from blitz.api import Client
+from blitzio.api import Client
 
 class  ClientTestCase(unittest.TestCase):
     
