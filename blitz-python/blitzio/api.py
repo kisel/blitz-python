@@ -103,7 +103,7 @@ class Curl:
         queue_response = self.client.execute(options)
         if queue_response is None: # raise error if we get no response
             raise Error('client', 'No response') 
-        elif queue_response.has_key('error'): # callback with error message
+        elif 'error' in queue_response: # callback with error message
             callback(queue_response)
             return
         self.job_id = queue_response['job_id']
@@ -120,14 +120,16 @@ class Curl:
             job = self.client.job_status(self.job_id)
             if job is None:
                 raise Error('client', 'No response') 
-            elif job.has_key('error'):
+            elif 'status' not in job:
+                raise Error('client', 'Wrong response format') 
+            elif 'error' in job:
                 callback(job)
                 break
-            elif job.has_key('result') and job['result'].has_key('error'):
+            elif 'result' in job and 'error' in job['result']:
                 callback(job['result'])
                 continue
             elif job['status'] == 'queued' \
-            or (job['status'] == 'running' and not job.has_key('result')):
+            or (job['status'] == 'running' and not 'result' in job):
                 continue
             result = self._format_result(job['result'])
             callback(result)
@@ -149,7 +151,7 @@ class Curl:
             response = self.client.login()
             if response is None:
                 raise Error('client', 'No response') 
-            elif response.has_key('error'):
+            elif 'error' in response:
                 raise Error(response['error'], response['reason'])
             else:
                 self.client.set_private_key(response['api_key'])
