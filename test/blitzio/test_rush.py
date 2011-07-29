@@ -32,6 +32,31 @@ class  RushTestCase(unittest.TestCase):
         self.rush.client.connection = mock.connection(resp)
         self.rush.execute(options, callback)
         
+    def test_successful_complex(self):
+        resp = {"/login/api":'{"ok":true, "api_key":"private-key"}',
+        
+            "/api/1/curl/execute":'{"ok":true, "status":"queued", \
+            "region":"california", "job_id":"c123"}',
+            
+            "/api/1/jobs/c123/status": '{"_id":"c123","ok":true,\
+            "status":"completed","result":{"region":"california","timeline":[\
+            {"duration":1,"total":10,"executed":8,"errors":1,\
+            "timeouts":1,"volume":10}, {"duration":2,"total":100,\
+            "executed":80,"errors":10,"timeouts":10,"volume":100}]}}'}
+            
+        def callback(result):
+            self.assertIsNotNone(result)
+            self.assertEqual('california', result.region)
+            self.assertIsNotNone(result.timeline)
+            self.assertEqual(2, len(result.timeline))
+            self.assertEqual(1, result.timeline[0].duration)
+            
+        options = {'url': 'http://example.com', 'status':200,
+            'pattern': { 'intervals': [{'start':1, 'end':2}]},
+            'cookies': ['cookie1=foo', 'cookie2=bar']}
+        self.rush.client.connection = mock.connection(resp)
+        self.rush.execute(options, callback)
+        
     def test_fail_login(self):
         resp = {"/login/api":'{"error":"login", "reason":"test"}'}
         
