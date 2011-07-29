@@ -57,7 +57,7 @@ class Client:
         data = json.dumps(post_data)
         self.connection.request("POST", path, data, self.get_headers())
         response = self.connection.getresponse()
-        response_string = response.read()
+        response_string = response.read().decode('UTF-8')
         return json.loads(response_string)
     
     def login(self):
@@ -65,7 +65,7 @@ class Client:
         path = "/login/api"
         self.connection.request("GET", path, None, self.get_headers())
         response = self.connection.getresponse()
-        response_string = response.read()
+        response_string = response.read().decode('UTF-8')
         return json.loads(response_string)
     
     def job_status(self, job_id):
@@ -73,7 +73,7 @@ class Client:
         path = "/api/1/jobs/{}/status".format(job_id)
         self.connection.request("GET", path, None, self.get_headers())
         response = self.connection.getresponse()
-        response_string = response.read()
+        response_string = response.read().decode('UTF-8')
         return json.loads(response_string)
     
     def abort_job(self, job_id):
@@ -81,7 +81,7 @@ class Client:
         path = "/api/1/jobs/{}/abort".format(job_id)
         self.connection.request("PUT", path, '', self.get_headers())
         response = self.connection.getresponse()
-        response_string = response.read()
+        response_string = response.read().decode('UTF-8')
         return json.loads(response_string)
     
     def close(self):
