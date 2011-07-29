@@ -1,0 +1,3 @@
+#ignored
+/blitz-python/blitz/__pycache__*
+/test/blitz/__pycache__*
