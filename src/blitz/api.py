@@ -103,9 +103,8 @@ class Curl:
         queue_response = self.client.execute(options)
         if queue_response is None: # raise error if we get no response
             raise Error('client', 'No response') 
-        elif 'error' in queue_response: # callback with error message
-            callback(queue_response)
-            return
+        elif 'error' in queue_response: 
+            raise Error(queue_response['error'], queue_response['reason'])
         self.job_id = queue_response['job_id']
         self.job_status(callback)
     
@@ -123,11 +122,9 @@ class Curl:
             elif 'status' not in job:
                 raise Error('client', 'Wrong response format') 
             elif 'error' in job:
-                callback(job)
-                break
+                raise Error(job['error'], job['reason'])
             elif 'result' in job and 'error' in job['result']:
-                callback(job['result'])
-                continue
+                raise Error(job['result']['error'], job['result']['reason'])
             elif job['status'] == 'queued' \
             or (job['status'] == 'running' and not 'result' in job):
                 continue
