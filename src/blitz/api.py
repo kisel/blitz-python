@@ -109,7 +109,8 @@ class Curl:
         self.job_status(callback)
     
     def job_status(self, callback):
-        """ """
+        """ Make a job status request to blitz every two seconds and tirggers
+            the callback on successful responses. Raise an error otherwise. """
         if self.job_id is None:
             raise Error('client', 'No job')
         self._check_authentication() #authenticates

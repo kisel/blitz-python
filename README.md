@@ -12,9 +12,13 @@ Login to [blitz.io](http://blitz.io) and in the blitz bar type:
     
     --api-key
 
-Then:
+Then download and:
 
     python setup.py install
+
+Or:
+
+    easy_install blitz
 
 And finally:
 
