@@ -32,7 +32,7 @@ class  ClientTestCase(unittest.TestCase):
         resp = {"/api/1/curl/execute":'{"ok":true, "status":"queued", \
             "region":"california", "job_id":"a123"}'}
         self.client.connection = mock.connection(resp)
-        data = {'url':'http://example.com'}
+        data = {'steps': [{'url':'http://example.com'}] }
         response = self.client.execute(data)
         self.assertIsNotNone(response)
         self.assertIsNotNone(response['ok'])
@@ -41,7 +41,7 @@ class  ClientTestCase(unittest.TestCase):
         self.assertEqual('california', response['region'])
         self.assertEqual('queued', response['status'])
         body = self.client.connection.body
-        self.assertEqual('{"url": "http://example.com"}', body)
+        self.assertEqual('{"steps": [{"url": "http://example.com"}]}', body)
     
     def test_job_status(self):
         resp = {"/api/1/jobs/c123/status":'{"_id":"c123", "ok":true,\

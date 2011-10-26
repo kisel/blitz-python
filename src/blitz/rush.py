@@ -2,7 +2,23 @@ __author__="ghermeto"
 __date__ ="$27/07/2011 23:23:30$"
 
 from blitz.api import Curl, ValidationError
-from blitz.validation import validate_url, validate_list, validate
+from blitz.validation import validate_list, validate
+
+class Step:
+    """ Per-step (for transactional rushes) metrics of a rush at time[i]. """
+    
+    def __init__(self, step):
+        """ duration: The duration of this step, when successful
+            connect: Average TCP connect times for this step
+            errors: Cummulative errors for this step
+            timeouts: Cummulative timeouts for this step
+            asserts: Cummulative assertion failures on status code """
+        
+        self.duration = step['d'] if 'd' in step else None
+        self.connect = step['c'] if 'c' in step else None
+        self.errors = step['e'] if 'e' in step else None
+        self.timeouts = step['t'] if 't' in step else None
+        self.asserts = step['a'] if 'a' in step else None
 
 class Point:
     """ Snapshot of a rush at time[i] containing information about hits, errors
@@ -17,7 +33,8 @@ class Point:
             timeouts: The number of timeouts
             volume: The concurrency level at this time
             txbytes: The total number of bytes sent
-            rxbytes: The total number of bytes received """
+            rxbytes: The total number of bytes received 
+            steps: Per-step metric at this point in time """
         
         self.timestamp = point['timestamp'] if 'timestamp' in point else None
         self.duration = point['duration'] if 'duration' in point else None
@@ -28,6 +45,12 @@ class Point:
         self.volume = point['volume'] if 'volume' in point else None
         self.txbytes = point['txbytes'] if 'txbytes' in point else None
         self.rxbytes = point['rxbytes'] if 'rxbytes' in point else None
+        if 'steps' in point and validate_list(point['steps']):
+            def step(s):
+                return Step(s)
+            self.steps = list(map(step, point['steps']))
+        else:
+            self.steps = None
 
 class Result:
     """ Represents the results returned by the rush. Contains the entire 
@@ -53,10 +76,8 @@ class Rush(Curl):
     
     def _validate(self, options):
         """ Raises a ValidationError if validation fails. """
-        failed = validate(options)
-        if not 'url' in options or not validate_url(options['url']):
-            failed.append('url')
         
+        failed = validate(options)
         if not 'pattern' in options or not 'intervals' in options['pattern'] \
         or not validate_list(options['pattern']['intervals']):
             failed.append('pattern')
@@ -65,4 +86,5 @@ class Rush(Curl):
     
     def _format_result(self, result):
         """ Return the rush result object to be passed to the callback. """
+        
         return Result(result)

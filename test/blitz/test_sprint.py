@@ -16,23 +16,24 @@ class  SprintTestCase(unittest.TestCase):
             
             "/api/1/jobs/a123/status": '{"_id":"a123","ok":true,\
             "status":"completed","result":{"region":"california","duration":10,\
-            "connect":1,"request":{"line":"GET / HTTP/1.1","method":"GET",\
-            "url":"http://localhost:9295","headers":{},\
-            "content":"MTIzNA=="},\
+            "steps":[{"connect":1,"request":{"line":"GET / HTTP/1.1",\
+            "method":"GET","url":"http://localhost:9295","headers":{},\
+            "content":"MTIzNA=="},"duration":10,\
             "response":{"line":"GET / HTTP/1.1","message":"message",\
-            "status":200,"headers":{},"content":"MTIzNA=="}}}'}
+            "status":200,"headers":{},"content":"MTIzNA=="}}]}}'}
             
         def callback(result):
             self.assertIsNotNone(result)
             self.assertEqual('california', result.region)
             self.assertEqual(10, result.duration)
-            self.assertIsNotNone(result.request)
-            self.assertIsNotNone(result.response)
-            self.assertEqual('GET', result.request.method)
-            self.assertEqual(200, result.response.status)
-            self.assertEqual('1234', result.request.content)
+            self.assertEqual(10, result.steps[0].duration)
+            self.assertIsNotNone(result.steps[0].request)
+            self.assertIsNotNone(result.steps[0].response)
+            self.assertEqual('GET', result.steps[0].request.method)
+            self.assertEqual(200, result.steps[0].response.status)
+            self.assertEqual('1234', result.steps[0].request.content)
             
-        options = {'url': 'http://example.com'}
+        options = {'steps':[{'url': 'http://example.com'}]}
         self.sprint.client.connection = mock.connection(resp)
         self.sprint.execute(options, callback)
         
@@ -42,7 +43,7 @@ class  SprintTestCase(unittest.TestCase):
         def callback(result):
             self.assertFalse(True)
 
-        options = {'url': 'http://example.com'}
+        options = {'steps':[{'url': 'http://example.com'}]}
         self.sprint.client.connection = mock.connection(resp)
         
         with self.assertRaises(Error) as err:
@@ -50,13 +51,28 @@ class  SprintTestCase(unittest.TestCase):
         
         self.assertEqual('login', err.exception.error)
     
-    def test_fail_validation(self):
+    def test_fail_validation_steps(self):
         resp = {}
         
         def callback(result):
             self.assertFalse(True)
 
         options = {}
+        self.sprint.client.connection = mock.connection(resp)
+        
+        with self.assertRaises(ValidationError) as err:
+            self.sprint.execute(options, callback)
+        
+        self.assertEqual('validation', err.exception.error)
+        self.assertIn('steps', err.exception.fields)
+
+    def test_fail_validation_url(self):
+        resp = {}
+        
+        def callback(result):
+            self.assertFalse(True)
+
+        options = {'steps':[{}]}
         self.sprint.client.connection = mock.connection(resp)
         
         with self.assertRaises(ValidationError) as err:
@@ -71,7 +87,7 @@ class  SprintTestCase(unittest.TestCase):
         def callback(result):
             self.assertFalse(True)
 
-        options = {'cookies':'string'}
+        options = {'steps':[{'cookies':'string'}]}
         self.sprint.client.connection = mock.connection(resp)
         
         with self.assertRaises(ValidationError) as err:
@@ -93,9 +109,10 @@ class  SprintTestCase(unittest.TestCase):
             self.assertTrue('error' in result)
             self.assertEqual('throttle', result['error'])
             
-        options = {'url': 'http://example.com'}
+        options = {'steps':[{'url': 'http://example.com'}]}
         self.sprint.client.connection = mock.connection(resp)
-        self.sprint.execute(options, callback)
+        with self.assertRaises(Error) as err:
+            self.sprint.execute(options, callback)
         
 
 if __name__ == '__main__':

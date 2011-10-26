@@ -17,15 +17,21 @@ def validate_list(lst):
 
 def validate(options):
     failed = []
-    if 'referrer' in options and not validate_url(options['referrer']):
-        failed.append('referrer')
-    if 'status' in options and not validate_int(options['status']):
-        failed.append('status')
-    if 'timeout' in options and not validate_int(options['timeout']):
-        failed.append('timeout')
-    if 'cookies' in options and not validate_list(options['cookies']):
-        failed.append('cookies')
-    if 'headers' in options and not validate_list(options['headers']):
-        failed.append('headers')
+    if not 'steps' in options or not validate_list(options['steps']):
+        failed.append('steps')
+    else:
+        for step in options['steps']:
+            if not 'url' in step or not validate_url(step['url']):
+                failed.append('url')
+            if 'referrer' in step and not validate_url(step['referrer']):
+                failed.append('referrer')
+            if 'status' in step and not validate_int(step['status']):
+                failed.append('status')
+            if 'timeout' in step and not validate_int(step['timeout']):
+                failed.append('timeout')
+            if 'cookies' in step and not validate_list(step['cookies']):
+                failed.append('cookies')
+            if 'headers' in step and not validate_list(step['headers']):
+                failed.append('headers')
     return failed
         

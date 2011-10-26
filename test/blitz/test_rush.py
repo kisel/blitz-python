@@ -27,7 +27,7 @@ class  RushTestCase(unittest.TestCase):
             self.assertEqual(2, len(result.timeline))
             self.assertEqual(1, result.timeline[0].duration)
             
-        options = {'url': 'http://example.com', 
+        options = {'steps':[{'url': 'http://example.com'}],
             'pattern': { 'intervals': [{'start':1, 'end':2}]}}
         self.rush.client.connection = mock.connection(resp)
         self.rush.execute(options, callback)
@@ -51,9 +51,9 @@ class  RushTestCase(unittest.TestCase):
             self.assertEqual(2, len(result.timeline))
             self.assertEqual(1, result.timeline[0].duration)
             
-        options = {'url': 'http://example.com', 'status':200,
-            'pattern': { 'intervals': [{'start':1, 'end':2}]},
-            'cookies': ['cookie1=foo', 'cookie2=bar']}
+        options = {'steps':[{'url': 'http://example.com', 'status':200, 
+            'cookies': ['cookie1=foo', 'cookie2=bar']}],
+            'pattern': { 'intervals': [{'start':1, 'end':2}]}}
         self.rush.client.connection = mock.connection(resp)
         self.rush.execute(options, callback)
         
@@ -63,7 +63,7 @@ class  RushTestCase(unittest.TestCase):
         def callback(result):
             self.assertFalse(True)
 
-        options = {'url': 'http://example.com', 
+        options = {'steps':[{'url': 'http://example.com'}],
             'pattern': { 'intervals': [{'start':1, 'end':2}]}}
         self.rush.client.connection = mock.connection(resp)
         
@@ -72,13 +72,29 @@ class  RushTestCase(unittest.TestCase):
         
         self.assertEqual('login', err.exception.error)
     
-    def test_fail_validation(self):
+    def test_fail_validation_steps(self):
         resp = {}
         
         def callback(result):
             self.assertFalse(True)
 
         options = {}
+        self.rush.client.connection = mock.connection(resp)
+        
+        with self.assertRaises(ValidationError) as err:
+            self.rush.execute(options, callback)
+        
+        self.assertEqual('validation', err.exception.error)
+        self.assertIn('steps', err.exception.fields)
+        self.assertIn('pattern', err.exception.fields)
+
+    def test_fail_validation_url(self):
+        resp = {}
+        
+        def callback(result):
+            self.assertFalse(True)
+
+        options = {'steps':[{}]}
         self.rush.client.connection = mock.connection(resp)
         
         with self.assertRaises(ValidationError) as err:
@@ -94,7 +110,7 @@ class  RushTestCase(unittest.TestCase):
         def callback(result):
             self.assertFalse(True)
 
-        options = {'url': 'http://example.com'}
+        options = {'steps':[{'url': 'http://example.com'}]}
         self.rush.client.connection = mock.connection(resp)
         
         with self.assertRaises(ValidationError) as err:
@@ -109,7 +125,7 @@ class  RushTestCase(unittest.TestCase):
         def callback(result):
             self.assertFalse(True)
 
-        options = {'cookies':'string'}
+        options = {'steps':[{'cookies':'string'}]}
         self.rush.client.connection = mock.connection(resp)
         
         with self.assertRaises(ValidationError) as err:
@@ -131,11 +147,12 @@ class  RushTestCase(unittest.TestCase):
             self.assertIsNotNone(result)
             self.assertTrue('error' in result)
             self.assertEqual('throttle', result['error'])
-            
-        options = {'url': 'http://example.com', 
+        
+        options = {'steps':[{'url': 'http://example.com'}],
             'pattern': { 'intervals': [{'start':1, 'end':2}]}}
         self.rush.client.connection = mock.connection(resp)
-        self.rush.execute(options, callback)
+        with self.assertRaises(Error) as err:
+            self.rush.execute(options, callback)
         
 
 if __name__ == '__main__':
