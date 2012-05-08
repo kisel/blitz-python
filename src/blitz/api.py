@@ -3,7 +3,10 @@ __date__ ="$27/07/2011 23:23:17$"
 
 import json
 import time
-import http.client
+try:
+    from http.client import HTTPConnection
+except ImportError:
+    from httplib import HTTPConnection
 
 class Error(Exception):
     """ Base error for Blitz api. """
@@ -34,7 +37,7 @@ class Client:
     
     def connect(self):
         """ Connects the client. """
-        self.connection = http.client.HTTPConnection(self.host, self.port)
+        self.connection = HTTPConnection(self.host, self.port)
 
     def get_headers(self):
         """ Returns the headers need for a auccessful request to blitz.io. """

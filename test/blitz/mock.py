@@ -32,4 +32,4 @@ class MockHTTPResponse:
         self.response = response
     
     def read(self, amt=0):
-        return bytes(self.response, 'UTF-8')
+        return bytearray(self.response, 'UTF-8')

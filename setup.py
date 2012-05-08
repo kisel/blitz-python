@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='blitz',
-    version='0.2.0',
+    version='0.3.1',
     author='Guilherme Hermeto',
     author_email='gui.hermeto@gmail.com',
     url='http://blitz.io',
@@ -14,5 +14,7 @@ setup(name='blitz',
     keywords='blitz performance load test sprint rush ping',
     license='The MIT Licence',
     classifiers=['Operating System :: OS Independent',
-               'Programming Language :: Python :: 3']
+               'Programming Language :: Python :: 3',
+               'Programming Language :: Python :: 2.7',
+               'Topic :: Software Development :: Testing :: Traffic Generation']
     )

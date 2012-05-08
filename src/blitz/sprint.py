@@ -20,7 +20,7 @@ class Request:
         self.method = request['method'] if 'method' in request else None
         self.url = request['url'] if 'url' in request else None
         if 'content' in request:
-            content = bytes(request['content'], "ascii")
+            content = bytearray(request['content'], "ascii")
             self.content = base64.b64decode(content).decode('UTF-8')
         else:
             self.content = None
@@ -41,7 +41,7 @@ class Response:
         self.status = response['status'] if 'status' in response else None
         self.message = response['message'] if 'message' in response else None
         if 'content' in response:
-            content = bytes(response['content'], "ascii")
+            content = bytearray(response['content'], "ascii")
             self.content = base64.b64decode(content).decode('UTF-8')
         else:
             self.content = None
