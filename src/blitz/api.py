@@ -91,23 +91,29 @@ class Client:
         """ Closes the connection. """
         self.connection.close()
         
+    def parse(self, post_data):
+        """ Sends a parse request to blitz.io RESTful API. """
+        path = "/api/1/parse"
+        data = json.dumps(post_data)
+        self.connection.request("POST", path, data, self.get_headers())
+        response = self.connection.getresponse()
+        response_string = response.read().decode('UTF-8')
+        return json.loads(response_string)
+
 class Curl:
     """ Base class used by Blitz curl tests. """
     
     def __init__(self, user, api_key, host=None, port=None, connect=True):
         self.client = Client(user, api_key, host, port, connect)
         self.job_id = None
-    
+        
     def execute(self, options, callback):
         """ Execute the test and waits for job_status notifications from the
             server. """
         self._validate(options) # raises error if options isn't valid
         self._check_authentication() #authenticates
         queue_response = self.client.execute(options)
-        if queue_response is None: # raise error if we get no response
-            raise Error('client', 'No response') 
-        elif 'error' in queue_response: 
-            raise Error(queue_response['error'], queue_response['reason'])
+        self._check_errors(queue_response)
         self.job_id = queue_response['job_id']
         self.job_status(callback)
     
@@ -145,6 +151,13 @@ class Curl:
         """ Method should be overriden by subclasses and return the appropritate
             result object to be passed to the callback. """
         pass
+    
+    def _check_errors(self, response):
+        """ Raise the proper error if server return a failure message. """
+        if response is None:
+            raise Error('client', 'No response')
+        elif 'error' in response:
+            raise Error(response['error'], response['reason'])
     
     def _check_authentication(self):
         """ Authenticates the Client if necesary, storing the private key. """

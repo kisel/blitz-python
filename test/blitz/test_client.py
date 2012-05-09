@@ -65,6 +65,18 @@ class  ClientTestCase(unittest.TestCase):
         self.assertTrue(response['ok'])
         path = self.client.connection.path
         self.assertEqual('/api/1/jobs/c123/abort', path)
+    
+    def test_parse(self):
+        resp = {"/api/1/parse":'{"ok":true,\
+            "command":{"steps":[{"url":"http://example.com"}]}}'}
+        self.client.connection = mock.connection(resp)
+        response = self.client.parse({"command": "http://example.com"})
+        self.assertIsNotNone(response)
+        self.assertIsNotNone(response['ok'])
+        self.assertTrue(response['ok'])
+        path = self.client.connection.path
+        self.assertEqual('/api/1/parse', path)
+        
 
 if __name__ == '__main__':
     unittest.main()
