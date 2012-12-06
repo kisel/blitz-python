@@ -4,7 +4,7 @@ __date__ ="$09/05/2012 11:30:00$"
 import time
 import blitz.rush
 import blitz.sprint
-from blitz.api import Curl
+from blitz.api import Curl, ValidationError
 from blitz.validation import validate
 
 class Test(Curl):
