@@ -2,6 +2,7 @@
 setup.py
 src/blitz/__init__.py
 src/blitz/api.py
+src/blitz/curl.py
 src/blitz/rush.py
 src/blitz/sprint.py
 src/blitz/validation.py

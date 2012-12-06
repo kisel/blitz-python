@@ -68,3 +68,33 @@ options = {
 r = Rush("your@account.com", "aqbcdge-sjfkgurti-sjdhgft-skdiues")
 r.execute(options, callback)    
 ```
+
+**Blitz-bar like syntax**
+
+It will parse the test string and recognize the test as a rush or a sprint
+
+```javascript
+from blitz.curl import Test
+
+test = Test("your@account.com", "aqbcdge-sjfkgurti-sjdhgft-skdiues")
+
+def callback_sprint(result):
+    print(result.region)
+    print(result.duration)
+
+test.parse("http://www.google.com", callback_sprint)
+
+def callback_rush(result):
+    for point in result.timeline:
+        print("[")
+        print("total:"+ str(point.total))
+        print(", errors: " + str(point.errors))
+        print(", hits: " + str(point.hits))
+        print(", steps: " + str(len(point.steps)))
+        for step in point.steps:
+            print("\tstep duration: " + str(step.duration))
+        print("]\n");
+
+test.parse("-p 10-100:60 http://example.com", callback_rush)
+```
+
