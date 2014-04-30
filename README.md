@@ -8,9 +8,8 @@
 
 ## Getting started
 
-Login to [blitz.io](http://blitz.io) and in the blitz bar type:
-    
-    --api-key
+Login to [blitz.io](http://blitz.io) and get your 
+API Blitz key in [account settings](https://www.blitz.io/to#/settings/blitz_keys)
 
 Then download and:
 
@@ -25,6 +24,8 @@ And finally:
 **Sprint**
 
 ```javascript
+from blitz.sprint import Sprint
+
 def callback(result):
     print("> Result:")
     print("\tregion: " + result.region)
@@ -41,13 +42,15 @@ options = {
         {'url': "http://your.cool.app/page1"}
     ]
 }
-s = Sprint("your@account.com", "aqbcdge-sjfkgurti-sjdhgft-skdiues")
+s = Sprint("<your@account.com>", "<api-key>")
 s.execute(options, callback)
 ```
 
 **Rush**
 
 ```javascript
+from blitz.rush import Rush
+
 def callback(result):
     for point in result.timeline:
         print("[")
@@ -65,7 +68,7 @@ options = {
         {'url': "http://your.cool.app/page1"}
     ],
     'pattern': { 'intervals': [{'start':1, 'end':50, 'duration':30}]}}
-r = Rush("your@account.com", "aqbcdge-sjfkgurti-sjdhgft-skdiues")
+r = Rush("<your@account.com>", "<api-key>")
 r.execute(options, callback)    
 ```
 
@@ -76,7 +79,7 @@ It will parse the test string and recognize the test as a rush or a sprint
 ```javascript
 from blitz.curl import Test
 
-test = Test("your@account.com", "aqbcdge-sjfkgurti-sjdhgft-skdiues")
+test = Test("<your@account.com>", "<api-key>")
 
 def callback_sprint(result):
     print(result.region)
